@@ -1,0 +1,10 @@
+{
+  "folders": [
+    { "name": "consumer · TreeViewHeteroVerify", "path": "TreeViewHeteroVerify" },
+    { "name": "perf · ReactorPerfLab", "path": "ReactorPerfLab" },
+    { "name": "compose · ReactorCompositionSpike", "path": "ReactorCompositionSpike" },
+    { "name": "blazor · BlazorTriggerBench", "path": "BlazorTriggerBench" },
+    { "name": "fork · microsoft-ui-reactor", "path": "microsoft-ui-reactor" }
+  ],
+  "settings": {}
+}

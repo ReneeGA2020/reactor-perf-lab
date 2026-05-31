@@ -1,0 +1,20 @@
+# ── build output ──
+**/bin/
+**/obj/
+**/[Dd]ebug/
+**/[Rr]elease/
+*.user
+
+# ── IDE ──
+.vs/
+.idea/
+
+# ── runtime logs written by the benches (optional — remove if you want to track history) ──
+**/logs/
+**/sweep_results.txt
+
+# ── The microsoft-ui-reactor fork is a SEPARATE repo. ──
+# Locally it lives here as a sibling checkout (ProjectReferences point at it).
+# When publishing to GitHub, formalize it as a submodule instead — see README.md "发布到 GitHub".
+# Until then it's ignored so `git add .` in this repo doesn't embed it.
+/microsoft-ui-reactor/

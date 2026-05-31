@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:bench="clr-namespace:BlazorTriggerBench.Bench"
+             x:Class="BlazorTriggerBench.MauiBenchPage"
+             BackgroundColor="#1E1E1E"
+             Title="MAUI 原生">
+
+    <ContentPage.Resources>
+        <bench:HexToColorConverter x:Key="Hex" />
+        <bench:FragForegroundConverter x:Key="FragFg" />
+        <bench:FragBackgroundConverter x:Key="FragBg" />
+        <bench:IndentConverter x:Key="Indent" />
+
+        <DataTemplate x:Key="FragT" x:DataType="bench:Fragment">
+            <Label Text="{Binding Text}" FontSize="12" Padding="3,0" VerticalOptions="Center"
+                   TextColor="{Binding Kind, Converter={StaticResource FragFg}}"
+                   BackgroundColor="{Binding Kind, Converter={StaticResource FragBg}}" />
+        </DataTemplate>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto,*">
+        <HorizontalStackLayout Grid.Row="0" Spacing="10" Padding="10" BackgroundColor="#252526">
+            <Label Text="行数" TextColor="#CCCCCC" VerticalOptions="Center" />
+            <Entry x:Name="RowsEntry" Text="500" WidthRequest="80" />
+            <Label Text="片段/行" TextColor="#CCCCCC" VerticalOptions="Center" />
+            <Entry x:Name="FragEntry" Text="14" WidthRequest="80" />
+            <Button Text="生成 / 重建" Clicked="OnGenerate" />
+            <Button Text="跳变压测" Clicked="OnAutoScroll" />
+            <Label x:Name="MetricLabel" TextColor="#4EC9B0" VerticalOptions="Center" />
+        </HorizontalStackLayout>
+
+        <CollectionView x:Name="List" Grid.Row="1">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="bench:StatementRow">
+                    <HorizontalStackLayout Spacing="6" Padding="6,2"
+                                           Margin="{Binding Depth, Converter={StaticResource Indent}}">
+                        <Label Text="›" TextColor="#808080" VerticalOptions="Center" />
+                        <Border BackgroundColor="{Binding KindColor, Converter={StaticResource Hex}}"
+                                Padding="6,1" StrokeThickness="0" VerticalOptions="Center">
+                            <Label Text="{Binding KindLabel}" TextColor="White" FontSize="11" />
+                        </Border>
+                        <HorizontalStackLayout Spacing="2"
+                                               BindableLayout.ItemsSource="{Binding Fragments}"
+                                               BindableLayout.ItemTemplate="{StaticResource FragT}" />
+                    </HorizontalStackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

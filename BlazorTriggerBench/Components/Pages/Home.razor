@@ -1,0 +1,102 @@
+@page "/"
+@using BlazorTriggerBench.Bench
+@inject IJSRuntime JS
+
+<div class="te-controls">
+    <span>行数</span>
+    <input type="number" @bind="_rowCount" min="1" max="50000" />
+    <span>片段/行</span>
+    <input type="number" @bind="_fragsPerRow" min="1" max="120" />
+    <button @onclick="Generate">生成 / 重建</button>
+    <button @onclick="AutoScroll">跳变压测</button>
+    <span id="liveFps" class="te-metric">live FPS: --</span>
+    <span class="te-metric">@_status</span>
+</div>
+
+<div id="teList" class="te-list">
+    <Virtualize Items="_rows" Context="row" ItemSize="34" OverscanCount="4">
+        <div class="te-row" style="margin-left:@(row.Depth * 16)px">
+            <span class="te-chevron">›</span>
+            <span class="te-kind" style="background:@row.KindColor">@row.KindLabel</span>
+            @foreach (var f in row.Fragments)
+            {
+                @if (f.Kind == FragKind.Button)
+                {
+                    <button class="te-fbtn">@f.Text</button>
+                }
+                else if (f.Kind == FragKind.Checkbox)
+                {
+                    <label class="te-fchk"><input type="checkbox" /> @f.Text</label>
+                }
+                else
+                {
+                    <span class="te-frag" style="@f.Style">@f.Text</span>
+                }
+            }
+            <button class="te-add">+</button>
+        </div>
+    </Virtualize>
+</div>
+
+@code {
+    private int _rowCount = 500;
+    private int _fragsPerRow = 14;
+    private List<StatementRow> _rows = new();
+    private string _status = "";
+    private System.Diagnostics.Stopwatch? _renderSw;
+    private bool _pendingRender;
+    private double _genMs;
+
+    protected override void OnInitialized()
+    {
+        BenchLog.Session();
+        Generate();
+    }
+
+    private void Generate()
+    {
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+        var (rows, fragTotal) = StatementData.Build(_rowCount, _fragsPerRow);
+        sw.Stop();
+        _genMs = sw.Elapsed.TotalMilliseconds;
+        _rows = rows;
+        _status = $"行 {rows.Count} | 片段 {fragTotal} | 生成 {_genMs:F1}ms | 渲染中…";
+        _renderSw = System.Diagnostics.Stopwatch.StartNew();
+        _pendingRender = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!_pendingRender) return;
+        _pendingRender = false;
+        double renderMs = _renderSw?.Elapsed.TotalMilliseconds ?? 0;
+        await Task.Delay(250); // let WebView2 + Virtualize finish populating before counting DOM
+        int dom = await JS.InvokeAsync<int>("bench.domCount");
+        _status = $"行 {_rows.Count} | 生成 {_genMs:F1}ms | 首屏渲染 {renderMs:F1}ms | DOM节点 {dom} | 日志 {BenchLog.Dir}";
+        BenchLog.Build(_rows.Count, _fragsPerRow, _genMs, renderMs, dom);
+        StateHasChanged();
+    }
+
+    private async Task AutoScroll()
+    {
+        _status = "跳变压测中…（6s）";
+        StateHasChanged();
+        var r = await JS.InvokeAsync<ScrollResult>("bench.autoScroll", 6000);
+        if (r is null)
+        {
+            _status = "跳变压测: 未找到列表";
+            return;
+        }
+        _status = $"跳变压测: avg {r.Avg:F0} | min {r.Min:F0} fps | 最差帧 {r.WorstMs:F0}ms | DOM {r.Dom} | 采样 {r.Samples}";
+        BenchLog.Scroll(_rows.Count, _fragsPerRow, r.Avg, r.Min, r.WorstMs, r.Dom, r.Samples);
+    }
+
+    public sealed class ScrollResult
+    {
+        public double Avg { get; set; }
+        public double Min { get; set; }
+        public double WorstMs { get; set; }
+        public int Dom { get; set; }
+        public int Samples { get; set; }
+    }
+}
