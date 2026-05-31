@@ -49,3 +49,31 @@ git push
 
 > 若 `git submodule add` 因目录已存在而报错：把现有 `microsoft-ui-reactor/` 暂移走再执行 add，让它重新 clone。
 > 将来 fork 稳定后，可改为发布版本化 NuGet 包、lab 用 `PackageReference` 钉版本，彻底去掉 submodule。
+
+## 维护：同步 upstream
+
+让 fork（`microsoft-ui-reactor`）跟上 upstream（microsoft/microsoft-ui-reactor），并让 lab 跟上 fork：
+
+```pwsh
+# 1) fork: main 快进到 upstream（= GitHub 的 "Sync fork"）
+git -C microsoft-ui-reactor fetch upstream
+git -C microsoft-ui-reactor checkout main
+git -C microsoft-ui-reactor merge --ff-only upstream/main
+git -C microsoft-ui-reactor push origin main
+
+# 2) fork: 把 perf-lab（= main + 本仓自定义改动，如 RichTextHyperlink.OnClick）rebase 到新 main
+git -C microsoft-ui-reactor checkout perf-lab
+git -C microsoft-ui-reactor rebase main          # 有冲突就解（多在 reconciler 的 mount/update 处）
+
+# 3) 重建 + 冒烟，确认对新版 Reactor 仍能编译/渲染（务必在 bump pin 前做）
+dotnet build ReactorPerfLab\ReactorPerfLab.csproj -c Release -p:Platform=x64
+
+# 4) force-push perf-lab（步骤 2 改写了历史）+ 更新 lab 的 submodule pin
+git -C microsoft-ui-reactor push --force-with-lease origin perf-lab
+git add microsoft-ui-reactor
+git commit -m "Bump fork submodule to latest upstream"
+git push
+```
+
+> 步骤 1 若不是快进（fork main 有独有提交而分叉），改用 `git rebase upstream/main` 或合并并解冲突。
+> 自定义改动建议都只放在 `perf-lab`（保持 `main` == upstream，方便随时快进 + 把单个改动 cherry-pick 成干净分支去提 PR）。
