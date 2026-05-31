@@ -28,6 +28,16 @@ dotnet build .\BlazorTriggerBench.csproj -c Debug -f net10.0-windows10.0.19041.0
 - **DOM 节点数**：列表内 DOM 元素数（Virtualize 应只保留视口附近）。
 - **跳变压测**：JS 用 van der Corput 在整列范围内每帧大跳 6s（对应 ReactorPerfLab 的跳变压测），报告 avg/min fps + 最差帧 ms。
 
+## 扁平 / 方块 渲染切换
+
+控件栏的 **扁平/方块** 按钮切换同一份数据的两种 DOM 渲染：
+- **扁平**：kind 徽章 + 行内文字片段（接近现役触发器编辑器）。
+- **方块**：每个 token 渲染成填充圆角 pill（Blockly 风格），按缩进嵌套。
+
+用来对照"方块风格在 DOM 上的代价"——DOM/CSS 做圆角嵌套块成本不高，配合 `<Virtualize>` 只渲可见行，
+理论上仍顺。和原生 Win2D 自绘块（`ReactorCompositionSpike` 的"方块自绘"）、原生 UIElement 块（`ReactorPerfLab` 重档）三方对比。
+日志 `event=build/scroll` 的 note 里记 `render=flat|block`。
+
 ## 跨框架比较口径
 
 rAF FPS 与 WinUI 的 `CompositionTarget.Rendering` 不同口径，且都被 vsync 封顶（本机 144Hz）——所以**别只看 FPS 数字**。

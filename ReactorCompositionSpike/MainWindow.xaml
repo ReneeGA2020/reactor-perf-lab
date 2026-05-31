@@ -19,6 +19,7 @@
                 <TextBlock x:Name="FpsText" FontFamily="Consolas" Foreground="White"
                            VerticalAlignment="Center" Text="swapchain present FPS: --" />
                 <Button x:Name="HeavyBtn" Content="重叠加: 关" Click="OnToggleHeavy" />
+                <Button Content="方块自绘 (Win2D)" Click="OnOpenBlocks" />
             </StackPanel>
         </Border>
     </Grid>

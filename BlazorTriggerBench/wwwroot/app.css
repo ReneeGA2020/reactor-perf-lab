@@ -27,6 +27,12 @@ html, body { margin: 0; height: 100%; background: #1e1e1e; color: #cccccc; }
 .te-fchk { color: #cccccc; font-size: 11px; display: inline-flex; align-items: center; gap: 3px; }
 .te-add { background: transparent; color: #888; border: 1px solid #444; border-radius: 3px; padding: 0 6px; font-size: 11px; opacity: 0.6; }
 
+/* ── block (Blockly-style) mode: every token a filled rounded pill ── */
+.te-blockrow { display: flex; align-items: center; gap: 5px; height: 30px; white-space: nowrap; font-size: 12px; }
+.te-blk-kind { color: #fff; font-weight: 600; font-size: 11px; border-radius: 6px; padding: 2px 9px; }
+.te-blk-pill { border-radius: 6px; padding: 2px 8px; border: 1px solid rgba(255,255,255,0.10); }
+.te-blk-btn { border: none; cursor: pointer; font-size: 12px; }
+
 a, .btn-link {
     color: #006bb7;
 }

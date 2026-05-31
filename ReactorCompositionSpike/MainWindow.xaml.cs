@@ -47,6 +47,13 @@ public sealed partial class MainWindow : Window
         };
     }
 
+    private Window? _blockWindow;
+    private void OnOpenBlocks(object sender, RoutedEventArgs e)
+    {
+        _blockWindow = new BlockCanvasWindow();
+        _blockWindow.Activate();
+    }
+
     private void OnToggleHeavy(object sender, RoutedEventArgs e)
     {
         _heavy = !_heavy;

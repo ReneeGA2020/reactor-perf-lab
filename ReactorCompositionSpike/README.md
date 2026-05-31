@@ -23,6 +23,14 @@ dotnet build .\ReactorCompositionSpike.csproj -c Debug -p:Platform=x64
   半透明原生行（合成器 alpha overdraw 压力），观察 present FPS 是否被拖低 = **合成器争用**程度。
   这回答了"真实 3D 编辑器里 重 UI 与实时 SwapChain 共存时性能是否扛得住"，而这是 PerfLab 纯 UI 对比测不到的。
 
+## 方块自绘 (Win2D) — "快方块"天花板
+
+主窗口的 **"方块自绘 (Win2D)"** 按钮打开 `BlockCanvasWindow`：一个 Win2D `CanvasControl` **即时绘制**
+成千上万个圆角彩色 token 行（kind 徽章 + 片段 pill，带文字、按缩进嵌套），**只画可见行**（自绘虚拟化）。
+滚轮 / 自动滚动 + FPS 表。要点：把"方块数"拉到 5万、20万，FPS 仍接近满帧（每帧只画 ~视口那几十行）——
+即游戏引擎画布式效率，但它是原生栈里的 XAML 元素（可原生合成）。用来对照"原生 UIElement 块（重，扛不住）
+vs 原生自绘块（这个，快）vs DOM 块（Blazor）"。
+
 ## 关键文件
 
 - `Composition/SwapChainRenderer.cs` — D3D11 设备/交换链/渲染循环 + present FPS。

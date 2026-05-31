@@ -37,17 +37,17 @@ public static class BenchLog
         Line($"session start | Blazor Hybrid (MAUI/WebView2) | .NET {Environment.Version} | {Environment.MachineName}");
     }
 
-    public static void Build(int rows, int frags, double genMs, double renderMs, int dom)
+    public static void Build(int rows, int frags, double genMs, double renderMs, int dom, string mode = "flat")
     {
-        Metric("build", rows, frags, genMs, renderMs, dom, null, null, null, null, "");
-        Line($"build [Blazor] rows={rows} frags/行={frags} | 生成 {genMs:F1}ms | 首屏渲染 {renderMs:F1}ms | DOM {dom}");
+        Metric("build", rows, frags, genMs, renderMs, dom, null, null, null, null, $"render={mode}");
+        Line($"build [Blazor/{mode}] rows={rows} frags/行={frags} | 生成 {genMs:F1}ms | 首屏渲染 {renderMs:F1}ms | DOM {dom}");
     }
 
-    public static void Scroll(int rows, int frags, double avgFps, double minFps, double worstMs, int dom, int samples)
+    public static void Scroll(int rows, int frags, double avgFps, double minFps, double worstMs, int dom, int samples, string mode = "flat")
     {
         Metric("scroll", rows, frags, null, null, dom, avgFps, minFps, worstMs, samples,
-            $"{samples} samples jump-stress");
-        Line($"jump-stress [Blazor] rows={rows} frags/行={frags} | avg {avgFps:F0} | min {minFps:F0} fps | 最差帧 {worstMs:F0}ms | DOM {dom}");
+            $"{samples} jumps, render={mode}");
+        Line($"jump-stress [Blazor/{mode}] rows={rows} frags/行={frags} | avg {avgFps:F0} | min {minFps:F0} fps | 最差帧 {worstMs:F0}ms | DOM {dom}");
     }
 
     private static void Metric(string evt, int rows, int frags, double? genMs, double? renderMs, int dom,

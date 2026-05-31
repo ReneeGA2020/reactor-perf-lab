@@ -21,12 +21,24 @@ public sealed class Fragment
     public string Style => Kind switch
     {
         FragKind.Keyword => "color:#C586C0;font-weight:600",
-        FragKind.Editable => "color:#9CDCFE;background:#2D2D30;border-radius:3px;padding:1px 6px",
+        FragKind.Editable => "color:#9CDCFE",
         FragKind.Operator => "color:#D7BA7D",
         FragKind.Paren => "color:#808080",
         FragKind.Type => "color:#FFFFFF;background:#264F78;border-radius:3px;padding:1px 6px",
         FragKind.Badge => "color:#1E1E1E;background:#4EC9B0;border-radius:3px;padding:1px 6px",
         _ => "color:#CCCCCC",
+    };
+
+    /// <summary>Block-mode CSS: every fragment becomes a filled rounded "pill" (Blockly look).</summary>
+    public string BlockStyle => Kind switch
+    {
+        FragKind.Keyword => "background:#C586C0;color:#1E1E1E;font-weight:600",
+        FragKind.Editable => "background:#37414F;color:#9CDCFE",
+        FragKind.Operator => "background:#4D4636;color:#D7BA7D",
+        FragKind.Type => "background:#264F78;color:#FFFFFF",
+        FragKind.Badge => "background:#4EC9B0;color:#1E1E1E",
+        FragKind.Paren => "background:#3A3A3A;color:#AAAAAA",
+        _ => "background:#2D2D30;color:#CCCCCC",
     };
 }
 

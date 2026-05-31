@@ -71,6 +71,18 @@
 - 因此**用 RichText/Inline 渲染就能让全原生方案的列表够快**，"为列表性能内嵌 BlazorWebView"的必要性大幅下降。
 - 代价：逐片段交互退化为文本；实战用"Inlines 显示 + 少数交互片段 `InlineUIContainer`/`Hyperlink`/overlay"的混合。
 
+## 2c. 方块风格（Blockly/嵌套块）三种渲染策略
+
+方块/拖拽块（v1 触发器编辑器风格，原 Urho 引擎自绘）需要**每 token 一个圆角彩色盒子 + 嵌套**——正是元素数量墙所在。三策略实测：
+
+| 策略 | 在哪 | 表现 |
+|---|---|---|
+| **原生自绘 (Win2D CanvasControl)** | ReactorCompositionSpike "方块自绘" | **最好**：只画可见行，方块数拉到 10 万 FPS 仍近满帧；引擎级效率，**且是原生**（可合成/透明/叠 SwapChain） |
+| DOM (Blazor, CSS pill + Virtualize) | BlazorTriggerBench "方块" | 良好：500×14 跳变 avg ~125 / min ~20 / 最差 ~50ms（略逊扁平的 ~30/35ms）；首屏 ~4ms |
+| 原生 UIElement (每 token 一控件) | ReactorPerfLab "多元素(重)" | 墙：500×50 ≈ 1–2fps |
+
+结论：**问题从不是"方块"，而是"用保留式 UIElement 树堆方块"**。自绘（Win2D = v1 Urho 那条路）和 DOM 都扛得住；UIElement-per-token 不行。而 Win2D 证明**原生栈自带自绘层（Composition/Win2D）**——能同时拿到引擎级效率 + 原生合成（Blazor 给不了）。所以 v1"Urho 比 native 快"不是 native 输，是当年**选错了渲染层**；今天在 WinUI 里用 Win2D/Composition 自绘即可"既快又原生"，无需回游戏引擎。
+
 ## 3. 透明 / SwapChain 原生合成（ReactorCompositionSpike）
 
 - ✅ **透明的 Reactor 原生 UI 能正确合成在实时 D3D11 `SwapChainPanel` 之上**（Vortice + `ISwapChainPanelNative`）；Reactor 按钮还能驱动底层 D3D（暂停/播放/重置动画）。

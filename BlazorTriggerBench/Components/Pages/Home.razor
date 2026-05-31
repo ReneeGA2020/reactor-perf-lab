@@ -9,32 +9,57 @@
     <input type="number" @bind="_fragsPerRow" min="1" max="120" />
     <button @onclick="Generate">生成 / 重建</button>
     <button @onclick="AutoScroll">跳变压测</button>
+    <button @onclick="ToggleBlock">@(_blockMode ? "方块" : "扁平")</button>
     <span id="liveFps" class="te-metric">live FPS: --</span>
     <span class="te-metric">@_status</span>
 </div>
 
 <div id="teList" class="te-list">
     <Virtualize Items="_rows" Context="row" ItemSize="34" OverscanCount="4">
-        <div class="te-row" style="margin-left:@(row.Depth * 16)px">
-            <span class="te-chevron">›</span>
-            <span class="te-kind" style="background:@row.KindColor">@row.KindLabel</span>
-            @foreach (var f in row.Fragments)
-            {
-                @if (f.Kind == FragKind.Button)
+        @if (_blockMode)
+        {
+            <div class="te-blockrow" style="margin-left:@(row.Depth * 16)px">
+                <span class="te-blk-kind" style="background:@row.KindColor">@row.KindLabel</span>
+                @foreach (var f in row.Fragments)
                 {
-                    <button class="te-fbtn">@f.Text</button>
+                    @if (f.Kind == FragKind.Button)
+                    {
+                        <button class="te-blk-pill te-blk-btn" style="@f.BlockStyle">@f.Text</button>
+                    }
+                    else if (f.Kind == FragKind.Checkbox)
+                    {
+                        <label class="te-blk-pill" style="@f.BlockStyle"><input type="checkbox" /> @f.Text</label>
+                    }
+                    else
+                    {
+                        <span class="te-blk-pill" style="@f.BlockStyle">@f.Text</span>
+                    }
                 }
-                else if (f.Kind == FragKind.Checkbox)
+            </div>
+        }
+        else
+        {
+            <div class="te-row" style="margin-left:@(row.Depth * 16)px">
+                <span class="te-chevron">›</span>
+                <span class="te-kind" style="background:@row.KindColor">@row.KindLabel</span>
+                @foreach (var f in row.Fragments)
                 {
-                    <label class="te-fchk"><input type="checkbox" /> @f.Text</label>
+                    @if (f.Kind == FragKind.Button)
+                    {
+                        <button class="te-fbtn">@f.Text</button>
+                    }
+                    else if (f.Kind == FragKind.Checkbox)
+                    {
+                        <label class="te-fchk"><input type="checkbox" /> @f.Text</label>
+                    }
+                    else
+                    {
+                        <span class="te-frag" style="@f.Style">@f.Text</span>
+                    }
                 }
-                else
-                {
-                    <span class="te-frag" style="@f.Style">@f.Text</span>
-                }
-            }
-            <button class="te-add">+</button>
-        </div>
+                <button class="te-add">+</button>
+            </div>
+        }
     </Virtualize>
 </div>
 
@@ -46,6 +71,8 @@
     private System.Diagnostics.Stopwatch? _renderSw;
     private bool _pendingRender;
     private double _genMs;
+    private bool _blockMode;
+    private string Mode => _blockMode ? "block" : "flat";
 
     protected override void OnInitialized()
     {
@@ -73,8 +100,17 @@
         await Task.Delay(250); // let WebView2 + Virtualize finish populating before counting DOM
         int dom = await JS.InvokeAsync<int>("bench.domCount");
         _status = $"行 {_rows.Count} | 生成 {_genMs:F1}ms | 首屏渲染 {renderMs:F1}ms | DOM节点 {dom} | 日志 {BenchLog.Dir}";
-        BenchLog.Build(_rows.Count, _fragsPerRow, _genMs, renderMs, dom);
+        BenchLog.Build(_rows.Count, _fragsPerRow, _genMs, renderMs, dom, Mode);
         StateHasChanged();
+    }
+
+    private async Task ToggleBlock()
+    {
+        _blockMode = !_blockMode;
+        StateHasChanged();
+        await Task.Delay(250); // let the new template render before counting DOM
+        int dom = await JS.InvokeAsync<int>("bench.domCount");
+        _status = $"模式 {(_blockMode ? "方块" : "扁平")} | 行 {_rows.Count} | DOM节点 {dom}（点跳变压测看滚动）";
     }
 
     private async Task AutoScroll()
@@ -88,7 +124,7 @@
             return;
         }
         _status = $"跳变压测: avg {r.Avg:F0} | min {r.Min:F0} fps | 最差帧 {r.WorstMs:F0}ms | DOM {r.Dom} | 采样 {r.Samples}";
-        BenchLog.Scroll(_rows.Count, _fragsPerRow, r.Avg, r.Min, r.WorstMs, r.Dom, r.Samples);
+        BenchLog.Scroll(_rows.Count, _fragsPerRow, r.Avg, r.Min, r.WorstMs, r.Dom, r.Samples, Mode);
     }
 
     public sealed class ScrollResult

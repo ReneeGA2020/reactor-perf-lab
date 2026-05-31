@@ -19,6 +19,8 @@
     <!-- Managed D3D11/DXGI for the SwapChainPanel transparency/compositing spike. -->
     <PackageReference Include="Vortice.Direct3D11" Version="3.*" />
     <PackageReference Include="Vortice.DXGI" Version="3.*" />
+    <!-- Win2D for the immediate-mode "self-draw blocks" demo (CanvasControl: rounded rects + text). -->
+    <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.*" />
   </ItemGroup>
 
   <ItemGroup>
