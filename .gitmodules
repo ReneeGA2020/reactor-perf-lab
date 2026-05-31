@@ -1,0 +1,4 @@
+[submodule "microsoft-ui-reactor"]
+	path = microsoft-ui-reactor
+	url = https://github.com/ReneeGA2020/microsoft-ui-reactor
+	branch = perf-lab
