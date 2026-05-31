@@ -4,7 +4,7 @@ using Windows.UI;
 namespace ReactorPerfLab.Model;
 
 /// <summary>
-/// Three heterogeneous node kinds, mirroring the SCE test's TypeA/TypeB/TypeC.
+/// Three heterogeneous node kinds, mirroring the test's TypeA/TypeB/TypeC.
 /// In milestone 1 every kind renders through ONE shared (homogeneous) template, so
 /// the native XAML TreeView never touches an ItemTemplateSelector and never hits the
 /// virtualization-recycling crash. The 3-kind data still produces visually distinct
@@ -106,7 +106,7 @@ public static class TreeData
             Name = $"{kind}_{id}",
             Kind = kind,
             Detail = $"id={id} - depth={currentDepth} - {children.Count} children",
-            IsExpanded = currentDepth < 2, // default-expand the first two levels (matches the SCE test)
+            IsExpanded = currentDepth < 2, // default-expand the first two levels (matches the test)
             Children = children,
         };
     }

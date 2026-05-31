@@ -1,6 +1,6 @@
 # 评估小结：microsoft-ui-reactor vs WinUI XAML（vs Blazor）
 
-> 场景：SCE 触发器编辑器式的**重模板列表**（每行=变长异构片段：可编辑值/类型标签/运算符/括号/按钮/复选框），
+> 场景：触发器编辑器式的**重模板列表**（每行=变长异构片段：可编辑值/类型标签/运算符/括号/按钮/复选框），
 > 以及"UI 需叠在实时 3D 视口（SwapChain）之上"。问题：Reactor 能否同时解决 WinUI XAML 的性能墙与 Blazor 的非原生痛点。
 > 数据来自 `ReactorPerfLab`（Release，x64，本机 144Hz）与 `ReactorCompositionSpike`。日志见 `ReactorPerfLab/logs/`。
 

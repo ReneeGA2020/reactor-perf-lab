@@ -5,7 +5,7 @@
 后续再接入 **Blazor (Hybrid/WebView2)**。
 
 目标：评估 microsoft-ui-reactor 能否绕开现有 WinUI XAML 在复杂/异构模板 TreeView
-上的 bug 与性能困境（参考此前 SCE 的 `TreeViewVirtualizationTest`，其 XAML 表现"无法接受"）。
+上的 bug 与性能困境（参考此前的 `TreeViewVirtualizationTest`，其 XAML 表现"无法接受"）。
 
 ## 怎么跑
 
@@ -74,7 +74,7 @@ dotnet build .\ReactorPerfLab.csproj -c Debug -p:Platform=x64
 
 1. **最小可跑（当前）**：XAML 原生 TreeView vs Reactor `TreeView<T>`，**单一同构复杂模板**
    （无 `ItemTemplateSelector` → 不触发原生 TreeView 的虚拟化回收崩溃）。FPS / 计时 / 内存 / 展开折叠齐活。
-2. **Blazor Hybrid**：移植 SCE 的自定义 `BlazorWebView`（约 14 个必需文件，跳过 Composition 那套），
+2. **Blazor Hybrid**：移植的自定义 `BlazorWebView`（约 14 个必需文件，跳过 Composition 那套），
    引入 ASP.NET Core Components WebView 包；Blazor 的 FPS 在 JS 侧用 rAF 量。
 3. **异构 3 模板压力测试**：XAML 侧必须改用自定义 `TreeViewEx`——
    原生 TreeView + `ItemTemplateSelector` 在虚拟化回收时会错配类型/模板而**崩溃**，

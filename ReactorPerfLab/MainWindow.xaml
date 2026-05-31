@@ -111,7 +111,7 @@
         <!-- Row 0: title -->
         <StackPanel Grid.Row="0">
             <TextBlock Text="Reactor Perf Lab - 复杂模板列表/树 性能对比" FontSize="22" FontWeight="Bold" />
-            <TextBlock Text="语句行场景建模 SCE 触发器编辑器：每行=变长异构片段（表达式树展开，含按钮/复选框等真实控件）。"
+            <TextBlock Text="语句行场景建模 触发器编辑器：每行=变长异构片段（表达式树展开，含按钮/复选框等真实控件）。"
                        Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="0,2,0,0" />
         </StackPanel>
 

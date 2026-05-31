@@ -6,7 +6,7 @@ namespace ReactorPerfLab.Perf;
 
 /// <summary>
 /// Framework-agnostic FPS meter on <see cref="CompositionTarget.Rendering"/> (same approach as
-/// the SCE test), but split into two phases so the one-time mount/first-layout hitch does NOT
+/// the test), but split into two phases so the one-time mount/first-layout hitch does NOT
 /// pollute steady-state numbers:
 ///
 ///   • 首次布局 (warm-up): right after a view is mounted. We report the WORST single frame time

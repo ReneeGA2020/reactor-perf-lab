@@ -6,7 +6,7 @@ using Windows.UI;
 namespace ReactorPerfLab.Model;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Faithful model of the SCE Trigger Editor's "statement row": each row is a
+// Faithful model of the Trigger Editor's "statement row": each row is a
 // VARIABLE-LENGTH, kind-heterogeneous run of inline "fragment" elements produced by
 // flattening an expression tree (mirrors NodeTextRenderer → List<TextFragment>).
 // Heavy rows reach 30–60+ fragments incl. real interactive controls (buttons,
